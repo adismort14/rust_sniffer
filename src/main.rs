@@ -33,20 +33,35 @@ impl Arguments {
             if user_flag.contains("-h") || user_flag.contains("--help") {
                 println!("Usage: -t to select how many threads you want it to use e.g. ip_sniffer.exe -t 16 <IP_ADDR> \r\n -h or --help to read the manual \r\n No flags and arguments will lead to default number of threads being used (4) e.g ip_sniffer <IP_ADDR>");
             } else if user_flag.contains("-t") {
-                if let Ok(user_threads) = args[2].clone().parse::<u16>() {
-                    let f = args[3].clone();
-                    if let Ok(ipaddr) = IpAddr::from_str(&f) {
-                        return Ok(Arguments {
-                            flag: "-t".to_string(),
-                            ip_addr: ipaddr,
-                            threads: user_threads,
-                        });
-                    } else {
-                        return Err("The IP Address is invalid. Please check it again.");
-                    }
-                } else {
-                    return Err("The argument after -t flag is supposed to be the number of threads i.e. a positive integer.");
-                }
+                // if let Ok(user_threads) = args[2].clone().parse::<u16>() {
+                //     let f = args[3].clone();
+                //     if let Ok(ipaddr) = IpAddr::from_str(&f) {
+                //         return Ok(Arguments {
+                //             flag: "-t".to_string(),
+                //             ip_addr: ipaddr,
+                //             threads: user_threads,
+                //         });
+                //     } else {
+                //         return Err("The IP Address is invalid. Please check it again.");
+                //     }
+                // } else {
+                //     return Err("The argument after -t flag is supposed to be the number of threads i.e. a positive integer.");
+                // }
+
+                // This is the more readable implementation of the above snippet. Try to use match as much as possible.
+                let ip_addr = match IpAddr::from_str(&args[3]) {
+                    Ok(s) => s,
+                    Err(_) => return Err("The IP Address is invalid. Please check it again. Must be IPv4 or IPv6"),
+                };
+                let threads = match args[2].parse::<u16>() {
+                    Ok(s) => s,
+                    Err(_) => return Err("The argument after -t flag is supposed to be the number of threads i.e. a positive integer."),
+                };
+                return Ok(Arguments {
+                    threads,
+                    flag:user_flag,
+                    ip_addr,
+                });
             } else {
                 return Err("The input format is incorrect. Check the docs with the -h flag.");
             }
