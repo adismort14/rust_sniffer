@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, process};
 use std::net::IpAddr;
 use std::str::FromStr;
 
@@ -33,6 +33,7 @@ impl Arguments {
             if user_flag.contains("-h") || user_flag.contains("--help") {
                 println!("Usage: -t to select how many threads you want it to use e.g. ip_sniffer.exe -t 16 <IP_ADDR> \r\n -h or --help to read the manual \r\n No flags and arguments will lead to default number of threads being used (4) e.g ip_sniffer <IP_ADDR>");
             } else if user_flag.contains("-t") {
+
                 // if let Ok(user_threads) = args[2].clone().parse::<u16>() {
                 //     let f = args[3].clone();
                 //     if let Ok(ipaddr) = IpAddr::from_str(&f) {
@@ -77,10 +78,16 @@ fn main() {
     // Arguments::new(user_args);
 
     // Need to pass it as borrow otherwise it takes ownership implicitly.
-    for arg in &user_args {
-        println!("{:?}", arg);
-    }
+    // for arg in &user_args {
+    //     println!("{:?}", arg);
+    // }
+
+    let program=user_args[0].clone();
+    let _arguments=Arguments::new(&user_args).unwrap_or_else(|err: &str|{
+        eprintln!("The program {} returned an error message: {}", program, err);
+        process::exit(0);
+    });
 
     // To give arguments to the program and not to cargo, use cargo run -- <enter arguments here>
-    println!("{:?}", user_args);
+    // println!("{:?}", user_args);
 }
